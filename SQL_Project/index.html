@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collection of Highly Cited Papers Related to Computer Science</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Overpass+Mono:wght@400;500;600&display=swap');
+
+        /* Computer Modern via CTAN */
+        @font-face {
+            font-family: 'Computer Modern';
+            src: url('https://cdn.jsdelivr.net/npm/computer-modern@0.1.0/fonts/Serif/cmunrm.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'Computer Modern';
+            src: url('https://cdn.jsdelivr.net/npm/computer-modern@0.1.0/fonts/Serif/cmunbx.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Computer Modern', 'Overpass Mono', Georgia, serif;
+            background: #fafafa;
+            color: #222;
+            min-height: 100vh;
+        }
+
+        /* ===== Top Header ===== */
+        .header {
+            text-align: center;
+            padding: 28px 20px 18px;
+            border-bottom: 1px solid #ddd;
+            background: #fff;
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            margin-bottom: 6px;
+        }
+
+        .header .author {
+            font-size: 0.95rem;
+            color: #555;
+            margin-bottom: 2px;
+        }
+
+        .header .attribution {
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* ===== Main Layout ===== */
+        .main-layout {
+            display: flex;
+            gap: 0;
+            min-height: calc(100vh - 110px);
+        }
+
+        /* ===== Sidebar ===== */
+        .sidebar {
+            width: 240px;
+            min-width: 240px;
+            padding: 20px 16px;
+            border-right: 1px solid #ddd;
+            background: #fff;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .filter-section {
+            margin-bottom: 24px;
+        }
+
+        .checkbox-group label {
+            display: block;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            cursor: pointer;
+            color: #333;
+            font-family: 'Overpass Mono', monospace;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            margin-right: 6px;
+            accent-color: #444;
+        }
+
+        .checkbox-group label:hover {
+            color: #000;
+        }
+
+        .radio-group label {
+            display: block;
+            font-size: 0.82rem;
+            line-height: 1.7;
+            cursor: pointer;
+            color: #333;
+            font-family: 'Overpass Mono', monospace;
+        }
+
+        .radio-group input[type="radio"] {
+            margin-right: 6px;
+            accent-color: #444;
+        }
+
+        .radio-group label:hover {
+            color: #000;
+        }
+
+        .apply-btn {
+            display: block;
+            width: 100%;
+            padding: 8px 0;
+            margin-top: 10px;
+            margin-bottom: 24px;
+            background: #fff;
+            border: 1px solid #999;
+            color: #333;
+            font-family: 'Overpass Mono', monospace;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .apply-btn:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        .order-toggle {
+            font-size: 0.82rem;
+            color: #444;
+            cursor: pointer;
+            font-family: 'Overpass Mono', monospace;
+            user-select: none;
+            display: inline-block;
+            padding: 4px 0;
+            border-bottom: 1px dashed #999;
+            transition: color 0.15s;
+        }
+
+        .order-toggle:hover {
+            color: #000;
+        }
+
+        /* ===== Content Area ===== */
+        .content {
+            flex: 1;
+            padding: 16px 20px;
+            overflow-x: auto;
+        }
+
+        .table-info {
+            font-family: 'Overpass Mono', monospace;
+            font-size: 0.82rem;
+            color: #555;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .page-arrows {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .page-arrows button {
+            background: none;
+            border: 1px solid #bbb;
+            cursor: pointer;
+            font-size: 0.9rem;
+            padding: 2px 8px;
+            color: #555;
+            border-radius: 3px;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .page-arrows button:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        /* ===== Data Table ===== */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.78rem;
+            table-layout: fixed;
+        }
+
+        .data-table th {
+            background: #f0f0f0;
+            text-align: left;
+            padding: 8px 6px;
+            font-family: 'Overpass Mono', monospace;
+            font-weight: 600;
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #555;
+            border-bottom: 2px solid #ccc;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 6px;
+            border-bottom: 1px solid #e8e8e8;
+            vertical-align: top;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        .data-table tr:hover {
+            background: #f5f7fa;
+        }
+
+        /* Column widths */
+        .col-paper_id {
+            width: 6%;
+        }
+
+        .col-title {
+            width: 22%;
+        }
+
+        .col-authors {
+            width: 18%;
+        }
+
+        .col-publication_date {
+            width: 8%;
+        }
+
+        .col-journal_name {
+            width: 14%;
+        }
+
+        .col-citation_count {
+            width: 7%;
+        }
+
+        .col-academic_field {
+            width: 16%;
+        }
+
+        .col-pdf_link {
+            width: 11%;
+        }
+
+        .data-table td a {
+            color: #2563eb;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .data-table td a:hover {
+            text-decoration: underline;
+        }
+
+        /* ===== Error Modal ===== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-box {
+            background: #fff;
+            border: 1px solid #ccc;
+            padding: 28px 32px;
+            max-width: 360px;
+            text-align: center;
+            font-family: 'Overpass Mono', monospace;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .modal-box p {
+            margin-bottom: 18px;
+            font-size: 0.9rem;
+            color: #333;
+        }
+
+        .modal-box button {
+            padding: 6px 24px;
+            border: 1px solid #999;
+            background: #fff;
+            cursor: pointer;
+            font-family: 'Overpass Mono', monospace;
+            font-size: 0.82rem;
+            transition: background 0.15s, color 0.15s;
+        }
+
+        .modal-box button:hover {
+            background: #333;
+            color: #fff;
+        }
+
+        /* Scrollbar */
+        .data-table-container {
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>Collection of Highly Cited Papers Related to Computer Science</h1>
+        <div class="author">Vincent Li</div>
+        <div class="attribution">Information of the papers are obtained from Semantic Scholar</div>
+    </div>
+
+    <!-- Main Layout -->
+    <div class="main-layout">
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="filter-section">
+                <h3>Subject Filters</h3>
+                <div class="checkbox-group" id="subjectFilters">
+                    <label><input type="checkbox" value="Computer Science"> Computer Science</label>
+                    <label><input type="checkbox" value="Mathematics"> Mathematics</label>
+                    <label><input type="checkbox" value="Engineering"> Engineering</label>
+                    <label><input type="checkbox" value="Medicine"> Medicine</label>
+                    <label><input type="checkbox" value="Biology"> Biology</label>
+                    <label><input type="checkbox" value="Chemistry"> Chemistry</label>
+                    <label><input type="checkbox" value="Economics"> Economics</label>
+                    <label><input type="checkbox" value="Psychology"> Psychology</label>
+                    <label><input type="checkbox" value="Political Science"> Political Science</label>
+                    <label><input type="checkbox" value="Business"> Business</label>
+                    <label><input type="checkbox" value="Physics"> Physics</label>
+                    <label><input type="checkbox" value="Sociology"> Sociology</label>
+                    <label><input type="checkbox" value="Materials Science"> Materials Science</label>
+                    <label><input type="checkbox" value="History"> History</label>
+                    <label><input type="checkbox" value="Environmental Science"> Environmental Science</label>
+                    <label><input type="checkbox" value="Education"> Education</label>
+                    <label><input type="checkbox" value="Linguistics"> Linguistics</label>
+                    <label><input type="checkbox" value="Art"> Art</label>
+                    <label><input type="checkbox" value="Geology"> Geology</label>
+                    <label><input type="checkbox" value="Agricultural and Food Sciences"> Agricultural and Food
+                        Sciences</label>
+                    <label><input type="checkbox" value="Geography"> Geography</label>
+                    <label><input type="checkbox" value="Philosophy"> Philosophy</label>
+                    <label><input type="checkbox" value="Law"> Law</label>
+                </div>
+                <button class="apply-btn" id="applyFilterBtn">Apply filter</button>
+            </div>
+
+            <div class="filter-section">
+                <h3>Order By</h3>
+                <div class="radio-group" id="orderFilters">
+                    <label><input type="radio" name="order_type" value="title"> title</label>
+                    <label><input type="radio" name="order_type" value="authors"> authors</label>
+                    <label><input type="radio" name="order_type" value="publication_date"> publication_date</label>
+                    <label><input type="radio" name="order_type" value="journal_name"> journal_name</label>
+                    <label><input type="radio" name="order_type" value="citation_count" checked> citation_count</label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <span class="order-toggle" id="orderToggle">Descending order</span>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content">
+            <div class="table-info" id="tableInfo">
+                <span id="infoText">Loading...</span>
+                <div class="page-arrows">
+                    <button id="prevPage" title="Previous page">&larr;</button>
+                    <button id="nextPage" title="Next page">&rarr;</button>
+                </div>
+            </div>
+            <div class="data-table-container">
+                <table class="data-table" id="papersTable">
+                    <thead>
+                        <tr>
+                            <th class="col-paper_id">Paper ID</th>
+                            <th class="col-title">Title</th>
+                            <th class="col-authors">Authors</th>
+                            <th class="col-publication_date">Pub. Date</th>
+                            <th class="col-journal_name">Journal</th>
+                            <th class="col-citation_count">Citations</th>
+                            <th class="col-academic_field">Field</th>
+                            <th class="col-pdf_link">PDF Link</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div class="modal-overlay" id="errorModal">
+        <div class="modal-box">
+            <p id="errorMessage">Error</p>
+            <button id="modalCloseBtn">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let currentPageNum = 1;
+        let currentFilters = [];
+        let currentOrderType = 'citation_count';
+        let currentOrderDesc = true;
+
+        const tableBody = document.getElementById('tableBody');
+        const infoText = document.getElementById('infoText');
+        const prevBtn = document.getElementById('prevPage');
+        const nextBtn = document.getElementById('nextPage');
+        const applyBtn = document.getElementById('applyFilterBtn');
+        const orderToggle = document.getElementById('orderToggle');
+        const errorModal = document.getElementById('errorModal');
+        const errorMessage = document.getElementById('errorMessage');
+        const modalCloseBtn = document.getElementById('modalCloseBtn');
+
+        // Build URL params from current state
+        function buildParams(pageNum) {
+            const params = new URLSearchParams();
+            params.set('page_num', pageNum);
+            if (currentFilters.length > 0) {
+                currentFilters.forEach(f => params.append('filters', f));
+            }
+            params.set('order_type', currentOrderType);
+            params.set('order_desc', currentOrderDesc.toString());
+            return params;
+        }
+
+        // Generic fetch that handles errors in JSON body (server returns 200 with error field)
+        function fetchAndRender(pageNum, onError) {
+            const params = buildParams(pageNum);
+
+            fetch('/api/papers?' + params.toString())
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        if (onError) {
+                            onError(data.error);
+                        } else {
+                            showError(data.error);
+                        }
+                        return;
+                    }
+                    renderTable(data.rows);
+                    infoText.textContent = data.work_range + ' of ' + data.count + ' works. Page ' + data.page_num + ' of ' + data.total_pages + ' pages.';
+                })
+                .catch(err => {
+                    showError('Network error: ' + err.message);
+                });
+        }
+
+        function renderTable(rows) {
+            tableBody.innerHTML = '';
+            rows.forEach(row => {
+                const tr = document.createElement('tr');
+
+                // paper_id
+                const tdId = document.createElement('td');
+                tdId.textContent = row.paper_id;
+                tr.appendChild(tdId);
+
+                // title
+                const tdTitle = document.createElement('td');
+                tdTitle.textContent = row.title || '';
+                tr.appendChild(tdTitle);
+
+                // authors
+                const tdAuthors = document.createElement('td');
+                tdAuthors.textContent = row.authors || '';
+                tr.appendChild(tdAuthors);
+
+                // publication_date
+                const tdDate = document.createElement('td');
+                tdDate.textContent = row.publication_date || '';
+                tr.appendChild(tdDate);
+
+                // journal_name
+                const tdJournal = document.createElement('td');
+                tdJournal.textContent = row.journal_name || '';
+                tr.appendChild(tdJournal);
+
+                // citation_count
+                const tdCitations = document.createElement('td');
+                tdCitations.textContent = row.citation_count;
+                tr.appendChild(tdCitations);
+
+                // academic_field
+                const tdField = document.createElement('td');
+                tdField.textContent = row.academic_field || '';
+                tr.appendChild(tdField);
+
+                // pdf_link
+                const tdPdf = document.createElement('td');
+                if (row.pdf_link && row.pdf_link.trim() !== '') {
+                    const a = document.createElement('a');
+                    a.href = row.pdf_link;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.textContent = row.pdf_link;
+                    tdPdf.appendChild(a);
+                }
+                // If empty, leave blank
+                tr.appendChild(tdPdf);
+
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function showError(msg) {
+            errorMessage.textContent = msg;
+            errorModal.classList.add('active');
+        }
+
+        // Pagination - with error handling that reverts page number
+        prevBtn.addEventListener('click', () => {
+            const oldPage = currentPageNum;
+            currentPageNum--;
+            fetchAndRender(currentPageNum, (errorMsg) => {
+                currentPageNum = oldPage;  // Revert to original page number
+                showError(errorMsg);
+            });
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const oldPage = currentPageNum;
+            currentPageNum++;
+            fetchAndRender(currentPageNum, (errorMsg) => {
+                currentPageNum = oldPage;  // Revert to original page number
+                showError(errorMsg);
+            });
+        });
+
+        // Apply filter button
+        applyBtn.addEventListener('click', () => {
+            currentFilters = [];
+            const checkboxes = document.querySelectorAll('#subjectFilters input[type="checkbox"]:checked');
+            checkboxes.forEach(cb => currentFilters.push(cb.value));
+            currentPageNum = 1;
+            fetchAndRender(currentPageNum);
+        });
+
+        // Order type radio buttons - immediate update
+        document.querySelectorAll('input[name="order_type"]').forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentOrderType = e.target.value;
+                currentPageNum = 1;
+                fetchAndRender(currentPageNum);
+            });
+        });
+
+        // Order toggle (descending / ascending) - immediate update
+        orderToggle.addEventListener('click', () => {
+            currentOrderDesc = !currentOrderDesc;
+            orderToggle.textContent = currentOrderDesc ? 'Descending order' : 'Ascending order';
+            currentPageNum = 1;
+            fetchAndRender(currentPageNum);
+        });
+
+        // Modal close
+        modalCloseBtn.addEventListener('click', () => {
+            errorModal.classList.remove('active');
+        });
+
+        // Initial load
+        fetchAndRender(currentPageNum);
+    </script>
+
+</body>
+
+</html>
