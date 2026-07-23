@@ -1,4 +1,4 @@
-# SQL_Project
+# README.md
 Yes so this is my project.
 
 Run **pip install flask**
